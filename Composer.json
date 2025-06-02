@@ -1,0 +1,30 @@
+{
+    "name": "mikhailovlab/php-fluent-console",
+    "description": "Wrapper library for working with the command line using the query builder.",
+    "version": "1.0.0",
+    "type": "library",
+    "keywords": [
+        "framework",
+        "cli",
+        "cmd",
+        "query builder",
+        "web service",
+        "mikhailovlab"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dmitrii Mikhailov",
+            "email": "da.mikhailoff@gmail.com",
+            "homepage": "https://github.com/MikhailovLab"
+        }
+    ],
+    "require": {
+        "php": "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "FluentConsole\\": "src/"
+        }
+    }
+}
