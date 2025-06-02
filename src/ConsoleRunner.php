@@ -154,7 +154,7 @@ class ConsoleRunner
             $encoding = 'chcp ' . $this->encoding . ' >nul  && ';
         }
 
-        exec($encoding . $this->command . ' 2>&1', $this->output, $this->returnCode);
+        exec($encoding . $this->command, $this->output, $this->returnCode);
 
         return $this->returnCode === 0;
     }
