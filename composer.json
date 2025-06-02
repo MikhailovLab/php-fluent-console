@@ -26,5 +26,7 @@
         "psr-4": {
             "FluentConsole\\": "src/"
         }
-    }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
