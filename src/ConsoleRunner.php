@@ -91,7 +91,7 @@ class ConsoleRunner
     public function addKey(string $key): self
     {
         if ($key !== '') {
-            $this->command .= escapeshellarg(' ' . $key);
+            $this->command .= (' ' . $key);
         }
         return $this;
     }
@@ -167,6 +167,18 @@ class ConsoleRunner
      */
     public function getOutput(): array
     {
+        if ($this->encoding) {
+            $this->output = array_map(function($line) {
+                return mb_convert_encoding($line, 'UTF-8', $this->encodings[$this->encoding]);
+            }, $this->output);
+        }
+
+        if ($this->encoding && $this->decoding) {
+            $this->output = array_map(function($line) {
+                return mb_convert_encoding($line, $this->encodings[$this->encoding], 'UTF-8');
+            }, $this->output);
+        }
+
         return $this->output;
     }
 
