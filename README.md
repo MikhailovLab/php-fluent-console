@@ -37,3 +37,152 @@
 
 ```cmd/bash
 composer require mikhailovlab/php-fluent-console
+
+```
+## Method descriptions
+## Описание методов 
+
+* Sets the command to execute.
+* Устанавливает команду для выполнения.
+```php 
+public function setCommand(string $cmd): self
+```
+
+* Adds an argument or part of a command.
+* Добавляет аргумент или часть команды.
+```php 
+public function addKey(string $key): self
+```
+
+* Sets the encoding for output. For example, '866' to display Cyrillic in Windows.
+* Устанавливает кодировку для вывода. Например, '866' для отображения кириллицы в Windows.
+```php
+public function encoding(?string $encoding = null): self
+```
+
+* Sets a flag that the encoding should be converted back. The method is useful for returning the output in the original encoding for working with cmd.
+* Устанавливает флаг, что нужно выполнить обратную конвертацию кодировки. Метод полезен для возврата вывода в исходной кодировке для работы с cmd.
+```php
+public function decoding(): self
+```
+
+* Returns the current command.
+* Возвращает текущую команду.
+```php
+public function getCommand(): string
+```
+
+* Executes the command and returns true if the return code is 0.
+* Выполняет команду и возвращает true, если код возврата равен 0.
+```php
+public function run(): bool
+```
+
+* Get the output after executing the command.
+* Получить вывод после выполнения команды.
+```php
+public function getOutput(): array
+```
+
+* Get the return code of the command execution.
+* Получить код возврата выполнения команды.
+```php
+public function getReturnCode(): int
+```
+
+* Checks output for errors using a regular expression.
+* Проверяет вывод на наличие ошибки по регулярному выражению.
+```php
+public function hasError(string $pattern): bool
+```
+
+* Gets all output lines that match a regular expression.
+* Получает все строки вывода, совпавшие с регулярным выражением.
+```php
+public function getMatches(string|array $patterns): array
+```
+
+#### Example 1
+* Getting an IP address in the Windows operating system
+* Получаем ip адерс в операционной системе windows
+
+```php 
+$cli = new ConsoleRunner();
+$cli->setCommand('ipconfig')
+    ->addKey('/all');
+// Optional encoding for Cyrillic output
+// ->encoding('866')
+// ->decoding();
+
+if ($cli->run()) {
+    print_r($cli->getOutput());
+    exit();
+}
+
+exit('Error, code: ' . $cli->getReturnCode());
+```
+
+#### Example 2
+* List digital signature containers (CSP)
+* Список контейнеров с электронными подписями
+```php 
+$cli = new ConsoleRunner();
+$cli->setCommand('csptest')
+    ->addKey('-keyset')
+    ->addKey('-enum_cont')
+    ->addKey('-verifycontext')
+    ->addKey('-fqcn');
+
+if ($cli->run()) {
+    // Filter output lines matching the pattern (e.g., container names)
+    print_r($cli->getMatches('#\\\\.*#'));
+    exit();
+}
+
+$pattern = '/\[ErrorCode:\s*(0x[0-9A-Fa-f]+)\]/';
+exit('Error code: ' . $cli->getMatches($pattern)[0]);
+```
+
+#### Example 3
+* We can inherit from the main class and instead of specifying methods via addKey we can call them dynamically using the magic method __call
+* Мы можем наследоваться от главного класса и вместо указания методов через addKey вызывать их динамически используя магический метод __call
+```php 
+class customRunner extends ConsoleRunner
+{
+    private $methods = [
+        'keyset',
+        'enum_cont',
+        'verifycontext',
+        'fqcn'
+    ];
+
+    public function __call(string $name, array $arguments): self
+    {
+        if (in_array($name, $this->methods)) {
+            $this->addKey('-' . $name);
+
+            if (!empty($arguments)) {
+                foreach ($arguments as $arg) {
+                    $this->addKey((string) $arg);
+                }
+            }
+
+            return $this;
+        }
+
+        throw new \BadMethodCallException("Method $name not supported");
+    }
+
+}
+
+
+$cli = new customRunner()
+    ->setCommand('csptest')
+    ->keyset()
+    ->enum_cont() 
+    ->verifycontext()
+    ->fqcn();
+```
+
+* This approach allows us to create flexible bindings and libraries without having to study the documentation.
+* Такой подход позволяет нам создавать гибкие обвязки и библиотеки, не отвлекаясь на изучение документации.
