@@ -186,8 +186,8 @@ try{
 		exit();
     }
 
-   $pattern = '/\[ErrorCode:\s*(0x[0-9A-Fa-f]+)\]/';
-   exit('Error code: ' . $cli->getMatches($pattern)[0]);
+    $pattern = '/\[ErrorCode:\s*(0x[0-9A-Fa-f]+)\]/';
+    exit('Error code: ' . $cli->getMatches($pattern)[0]);
 
 }catch (Exception $e){
     exit($e->getMessage());
