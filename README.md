@@ -183,7 +183,7 @@ try{
 
     if ($cli->run()) {
         print_r($cli->getMatches('#\\\\.*#'));
-		exit();
+        exit();
     }
 
     $pattern = '/\[ErrorCode:\s*(0x[0-9A-Fa-f]+)\]/';
