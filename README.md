@@ -110,9 +110,6 @@ public function getMatches(string|array $patterns): array
 $cli = new ConsoleRunner();
 $cli->setCommand('ipconfig')
     ->addKey('/all');
-// Optional encoding for Cyrillic output
-// ->encoding('866')
-// ->decoding();
 
 if ($cli->run()) {
     print_r($cli->getOutput());
@@ -170,18 +167,31 @@ class customRunner extends ConsoleRunner
             return $this;
         }
 
-        throw new \BadMethodCallException("Method $name not supported");
+        throw new \BadMethodCallException("Method $name is not supported");
     }
 
 }
 
 
-$cli = new customRunner()
-    ->setCommand('csptest')
-    ->keyset()
-    ->enum_cont() 
-    ->verifycontext()
-    ->fqcn();
+try{
+    $cli = new customRunner()
+        ->setCommand('csptest')
+        ->keyset()
+        ->enum_cont() 
+        ->verifycontext()
+        ->fqcn();
+
+    if ($cli->run()) {
+        print_r($cli->getMatches('#\\\\.*#'));
+		exit();
+    }
+
+   $pattern = '/\[ErrorCode:\s*(0x[0-9A-Fa-f]+)\]/';
+   exit('Error code: ' . $cli->getMatches($pattern)[0]);
+
+}catch (Exception $e){
+    exit($e->getMessage());
+}
 ```
 
 * This approach allows us to create flexible bindings and libraries without having to study the documentation.
